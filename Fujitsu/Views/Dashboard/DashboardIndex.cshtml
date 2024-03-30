@@ -1,0 +1,586 @@
+﻿@{
+    ViewData["Title"] = "DashboardIndex";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body">
+    <div class="page-titles">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active"><a href="javascript:void(0)">Customers</a></li>
+        </ol>
+    </div>
+    <!-- container starts -->
+    <div class="container-fluid">
+        <!-- row -->
+        <div class="demo-view">
+            <div class="container-fluid pt-0 ps-0 pe-lg-4 pe-0">
+                <div class="col-xl-12">
+                    <div class="card dz-card">
+                        <div class="card-header flex-wrap d-flex justify-content-between">
+                            <div>
+                                <h6 class="card-title">Customer List</h6>
+                            </div>
+                        </div>
+                        <div class="card-body pt-0">
+                            <div class="basic-form">
+                                <form>
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">Supplier Code</label>
+                                        <div class="col-sm-3">
+                                            <input type="text" id="txt_supp_code" class="form-control" placeholder="Supplier Code" />
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">Province</label>
+                                        <div class="col-sm-3">
+                                            <select id="dd_province" class="form-control" onchange="DD_City(this.value)">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                    <div class="mb-3 row">
+                                        <label class="col-sm-2 col-form-label">City</label>
+                                        <div class="col-sm-3">
+                                            <select id="dd_city" class="form-control">
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                    <button class="btn btn-primary" type="button" onclick="Search('search')">Search</button>
+                                    <button class="btn btn-danger light" type="button" onclick="Clear()">Clear</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-fluid pt-0 ps-0 pe-lg-4 pe-0">
+                <div class="col-xl-12">
+                    <div class="card dz-card">
+                        <div class="card-header">
+                            <div class="mb-3">
+                                <label for="formFile" class="form-label">Upload</label>
+                                <input class="form-control" type="file" id="formFile">
+                            </div>
+                            <button class="btn btn-primary btn-sm" id="btn_Add_Customer" onclick="Upload()">
+                                Upload
+                            </button>
+                        </div>
+                        <div class="card-body pt-0">
+                            <button class="btn btn-primary btn-sm" id="btn_Upload_Customer" onclick="Add()">
+                                + Add New Customer
+                            </button>
+                            <div class="table-responsive">
+                                <table id="tbl-customer" class="table table-striped" style="min-width: 845px">
+                                    <thead>
+                                        <tr>
+                                            <th align="center">Supplier Code</th>
+                                            <th align="center">Supplier Name</th>
+                                            <th align="center">Address</th>
+                                            <th align="center">Province</th>
+                                            <th align="center">City</th>
+                                            <th align="center">PIC</th>
+                                            <th align="center">Action</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                            <button class="btn btn-primary btn-sm" id="btn_Add_Customer" onclick="downloadExcel()">
+                                Download
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="mdl-customer" aria-hidden="true" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle"> </h5>
+                    <button type="button" class="btn-close" onclick="Clear()" data-bs-dismiss="modal">
+                    </button>
+                </div>
+
+                <div class="card-body">
+                    <div class="basic-form">
+                        <form id="modalForm">
+                            <input type="hidden" id="code" class="form-control" />
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">Supplier Code</label>
+                                <div class="col-sm-9">
+                                    <input type="text" id="mdl_supplier_code" class="form-control" placeholder="Supplier Code" pattern="[A-Za-z]{1,2}" title="Supplier code must be 1 or 2 letters only" required>
+                                    <div class="invalid-feedback">
+                                        Supplier code must be 1 or 2 letters only.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">Supplier Name</label>
+                                <div class="col-sm-9">
+                                    <input type="text" id="mdl_supplier_name" class="form-control" placeholder="Supplier Name" pattern=".*(?:CV|PT).*" title="Supplier name must contain 'CV' or 'PT'" maxlength="50" required>
+                                    <div class="invalid-feedback">
+                                        Supplier name must contain 'CV' or 'PT'.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">Address</label>
+                                <div class="col-sm-9">
+                                    <input type="text" id="mdl_address" class="form-control" placeholder="Address" maxlength="50" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid address.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">Province</label>
+                                <div class="col-sm-9">
+                                    <select id="mdl_dd_province" class="form-control" onchange="DD_City(this.value)" required>
+                                        <option value="">Select Province</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select a province.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">City</label>
+                                <div class="col-sm-9">
+                                    <select id="mdl_dd_city" class="form-control" required>
+                                        <option value="">Select City</option>
+                                    </select>
+                                    <div class="invalid-feedback">
+                                        Please select a city.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3 row">
+                                <label class="col-sm-3 col-form-label">PIC</label>
+                                <div class="col-sm-9">
+                                    <input type="text" id="mdl_pic" class="form-control" placeholder="PIC" maxlength="50" pattern="[^0-9]+" title="PIC must not contain numeric characters" required>
+                                    <div class="invalid-feedback">
+                                        PIC must not contain numeric characters.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-danger light" id="cancel" type="button" data-bs-dismiss="modal">Cancel</button>
+                                <button class="btn btn-primary" id="save" type="button">Save</button>
+                                <button class="btn btn-success" id="update" type="button" style="display:none">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section script {
+    <script type="text/javascript">
+        var dataArrayCity = [];
+        var dataArrayProv = [];
+        var dataEntry = new Object();
+        var table;
+
+        //Triger valditation before save
+        function handleSaveButtonClick(event, param) {
+            event.preventDefault();
+
+            if ($('#modalForm')[0].checkValidity() === false) {
+                event.stopPropagation();
+            } else {
+                Submit(param);
+            }
+            $('#modalForm').addClass('was-validated');
+        }
+
+        $('#save').click(function (event) {
+            handleSaveButtonClick(event, 1);
+        });
+
+        $('#update').click(function (event) {
+            handleSaveButtonClick(event, 2);
+        });
+
+        //initiate dropdown
+        var dropdownCity = $('#dd_city');
+        dropdownCity.append($('<option>', {
+            value: '',
+            text: 'Select Option'
+        }));
+
+        var MdldropdownCity = $('#mdl_dd_city');
+        MdldropdownCity.append($('<option>', {
+            value: '',
+            text: 'Select Option'
+        }));
+
+        $(document).ready(function () {
+
+            DD_Prov();
+
+        });
+
+        function Add() {
+            $('#mdl-customer').modal('show');
+            $('#modalTitle').text('Add New Customer');
+
+            dropdownCity.empty();
+            MdldropdownCity.empty();
+
+            $("#save").css("display", "block");
+            $("#update").css("display", "none");
+        }
+
+        function Clear() {
+            $('#txt_supp_code').val("")
+            $('#dd_province').val("")
+            $('#dd_city').val("")
+
+            $('#mdl_supplier_code').val("")
+            $('#mdl_supplier_name').val("")
+            $('#mdl_addres').val("")
+            $('#mdl_dd_province').val("")
+            $('#mdl_dd_city').val("")
+            $('#mdl_pic').val("")
+
+            $('#modalForm').removeClass('was-validated');
+        }
+
+        function Search(value) {
+
+            if (value == 'search') {
+                dataEntry.supplierCode = $('#txt_supp_code').val();
+                dataEntry.province = $('#dd_province').val();
+                dataEntry.city = $('#dd_city').val();
+            }
+
+            if ($.fn.DataTable.isDataTable('#tbl-customer')) {
+                $('#tbl-customer').DataTable().destroy();
+            }
+
+            table = $('#tbl-customer').DataTable({
+                ajax: {
+                    url: "/Dashboard/generateTable",
+                    method: "post",
+                    data: dataEntry,
+                    // dataType: "json",
+                    // contentType: "application/json; chatrset=utf-8",
+                    dataSrc: "dataList",
+                },
+                columns: [
+                    { data: "supplierCode" },
+                    { data: "supplierName" },
+                    { data: "address" },
+                    { data: "province" },
+                    { data: "city" },
+                    { data: "pic" }
+                ],
+                columnDefs: [
+                    {
+                        targets: 6,
+                        render: function (data, type, row, meta) {
+                            return '<a href="#" id="btnUpdate" class="btn btn-primary shadow btn-xs sharp me-1" onclick="getData(\'' + row.supplierCode.toString() + '\')"><i class="fas fa-pencil-alt"></i></a>' +
+                                '<a href="#" id="btnDelete" class="btn btn-danger shadow btn-xs sharp" onclick="Delete(\'' + row.supplierCode.toString() + '\')" > <i class="fa fa-trash" > </i></a > ';
+                        }
+                    }
+                ],
+                language: {
+                    paginate: {
+                        next: '<i class="fa-solid fa-angle-right"></i>',
+                        previous: '<i class="fa-solid fa-angle-left"></i>'
+                    }
+                },
+                drawCallback: function (settings) {
+                    var api = this.api();
+                    if (api.rows().count() === 0) {
+                        $('#tbl-customer tbody').html('<tr><td colspan="7" class="text-center">No data found</td></tr>');
+                    }
+                }
+            });
+        };
+
+        function DD_Prov() {
+            $.ajax({
+                url: 'Dashboard/populateDdProv',
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response != null) {
+
+                        for (var i = 0; i < response.length; i++) {
+                            dataArrayProv.push(response[i].province);
+                        }
+
+                        var dropdownProv = $('#dd_province');
+                        dropdownProv.empty();
+                        dropdownProv.append($('<option>', {
+                            value: '',
+                            text: 'Select Option'
+                        }));
+
+                        var MdldropdownProv = $('#mdl_dd_province');
+                        MdldropdownProv.empty();
+                        MdldropdownProv.append($('<option>', {
+                            value: '',
+                            text: 'Select Option'
+                        }));
+
+                        dataArrayProv.forEach(function (province) {
+                            dropdownProv.append($('<option>', {
+                                value: province,
+                                text: province
+                            }));
+                        });
+
+                        dataArrayProv.forEach(function (province) {
+                            MdldropdownProv.append($('<option>', {
+                                value: province,
+                                text: province
+                            }));
+                        });
+
+                    } else {
+                        console.error('Failed to fetch data.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+        };
+
+        function DD_City(value) {
+            $.ajax({
+                url: 'Dashboard/populateDdCity?prov=' + value,
+                type: 'GET',
+                dataType: 'json',
+                success: function (response) {
+                    if (response != null) {
+
+                        dataArrayCity = [];
+                        for (var i = 0; i < response.length; i++) {
+                            dataArrayCity.push(response[i].city);
+                        }
+
+                        dropdownCity.empty();
+                        MdldropdownCity.empty();
+
+                        dataArrayCity.forEach(function (city) {
+                            dropdownCity.append($('<option>', {
+                                value: city,
+                                text: city
+                            }));
+                        });
+
+                        dataArrayCity.forEach(function (city) {
+                            MdldropdownCity.append($('<option>', {
+                                value: city,
+                                text: city
+                            }));
+                        });
+
+                    } else {
+                        console.error('Failed to fetch data.');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+        };
+
+        function Submit(value) {
+
+            dataEntry.supplierCode = $('#mdl_supplier_code').val();
+            dataEntry.supplierName = $('#mdl_supplier_name').val();
+            dataEntry.Address = $('#mdl_address').val();
+            dataEntry.province = $('#mdl_dd_province').val();
+            dataEntry.city = $('#mdl_dd_city').val();
+            dataEntry.pic = $('#mdl_pic').val();
+
+            console.log(">>>>>", value)
+
+            if (value === 1) { // 1 = SAVE NEW
+                confirm("Create?", "Insert New Customer?", "question", function (confirmed) {
+                    if (confirmed) {
+                        //Insert New
+                        $.ajax({
+                            url: '/Dashboard/Insert',
+                            data: dataEntry,
+                            type: 'Post',
+                            success: function (response) {
+                                if (response == null || response == undefined || response.length == 0) {
+                                    //hanlde if something went wrong here
+                                } else {
+                                    if (response.isError == false) {
+                                        $('#mdl-customer').modal('hide');
+                                        Clear();
+                                        msg_succ(response.isMessage);
+                                        Search('insert'); //refresh Datatable
+                                    } else {
+                                        msg_err(response.isMessage);
+                                    }
+                                }
+                            }
+                        })
+                    }
+                });
+            }
+            else { //Update existing
+                confirm("Update?", "You can't reverse this action", "question", function (confirmed) {
+                    if (confirmed) {
+                        //update
+                        $.ajax({
+                            url: '/Dashboard/Update',
+                            data: dataEntry,
+                            type: 'Put',
+                            success: function (response) {
+                                if (response == null || response == undefined || response.length == 0) {
+                                    //hanlde if something went wrong here
+                                } else {
+                                    if (response.isError == false) {
+                                        $('#mdl-customer').modal('hide');
+                                        Clear();
+                                        msg_succ(response.isMessage);
+                                        Search('update'); //refresh Datatable
+                                    } else {
+
+                                    }
+                                }
+                            }
+                        })
+                    }
+                });
+            }
+        };
+
+        function Delete(supplierCode) {
+            confirm("Delete?", "You can't reverse this action", "warning", function (confirmed) {
+                if (confirmed) {
+                    $.ajax({
+                        url: '/Dashboard/Delete?supplierCode=' + supplierCode,
+                        type: 'Post',
+                        dataType: 'json',
+                        success: function (response) {
+                            if (response.isError == true) {
+                                //hanlde if something went wrong here
+                            } else {
+                                if (response.isError == false) {
+                                    // $('#mdl-customer').DataTable().ajax.reload();
+                                    Search('delete')
+                                    msg_succ(response.isMessege);
+                                } else {
+
+                                }
+                            }
+                        }
+                    })
+                }
+            });
+        };
+
+        function getData(supplierCode) {
+
+            var rowData = table.rows().data().filter(function (value, index) {
+                return value.supplierCode === supplierCode;
+            }).toArray()[0];
+
+
+
+            $('#mdl_supplier_code').val(rowData.supplierCode);
+            $('#mdl_supplier_name').val(rowData.supplierName);
+            $('#mdl_address').val(rowData.address);
+            $('#mdl_dd_province').val(rowData.province);
+            // $('#mdl_dd_city').val(rowData.city);
+            $('#mdl_pic').val(rowData.pic);
+
+            $('#mdl_dd_province').change();
+
+            // Show the modal
+            $('#mdl-customer').modal('show');
+            $('#modalTitle').text('Edit Existing Supplier');
+
+            $("#update").css("display", "block");
+            $("#save").css("display", "none");
+        };
+
+        function Upload() {
+            var fileInput = document.getElementById('formFile');
+            var file = fileInput.files[0];
+            var formData = new FormData();
+            formData.append('file', file);
+
+            axios.post('/Dashboard/Upload', formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+                .then(function (response) {
+                    console.log(response.data);
+                    alert('File uploaded and data inserted successfully.');
+                })
+                .catch(function (error) {
+                    console.error(error);
+                    alert('Error uploading file: ' + error.message);
+                });
+        }
+
+        function downloadExcel() {
+            const date = new Date();
+
+            // ddaaateeee
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+
+            const timestamp = year + month + day + hours + minutes;
+
+            let data = table.rows().data().toArray();
+            let filename = "customer_table_" + timestamp;
+            const wb = XLSX.utils.book_new();
+
+
+            const ws = XLSX.utils.json_to_sheet(data);
+
+
+            ws['!cols'] = [
+                { width: 20 }, // Adjust width excel
+                { width: 20 },
+                { width: 20 },
+                { width: 20 },
+                { width: 20 },
+                { width: 20 }
+            ];
+
+
+            const headerCellStyle = { font: { bold: true } };
+            Object.keys(ws).filter(key => key.startsWith('A1:')).forEach(key => {
+                ws[key].s = headerCellStyle;
+            });
+
+            XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', bookSST: true, type: 'binary' });
+            saveAs(new Blob([s2ab(wbout)], { type: "application/octet-stream" }), filename + ".xlsx");
+        }
+        function s2ab(s) {
+            const buf = new ArrayBuffer(s.length);
+            const view = new Uint8Array(buf);
+            for (let i = 0; i < s.length; i++) {
+                view[i] = s.charCodeAt(i) & 0xFF;
+            }
+            return buf;
+        }
+
+    </script>
+}
