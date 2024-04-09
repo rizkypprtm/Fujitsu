@@ -1,9 +1,5 @@
 Hallo, 
 
-
-	Solution ini di buat untuk berdasarkan assesment yg di berikan oleh pihak Fujitsu,
-
-	Adapun Soal case SQL no 2 dan script jawaban nya yang sudah di buat adalah SQLQueryJawabanNo2.sql
 	
 	Database Script full atau hanya berisi data sdah tersedia di folder Utility bsesrta beberapa screenshoot dari aplikasi .
 
